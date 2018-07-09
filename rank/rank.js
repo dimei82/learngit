@@ -42,7 +42,7 @@ pro.load = function(detail, mode, sub, cycle, cb) {
         }
 
         if (!data) {
-            var entity = new dao({ rankcycle : cycle, rankmode : mode, ranksubmode : sub, ranklist:[] });
+            var entity = new model({ cycle : cycle, rankmode : mode, ranksubmode : sub, ranklist:[] });
             entity.save(function(err, data){
                 if (err) {
                     cb(err);
@@ -72,7 +72,7 @@ pro.getMinScore = function(){
 
 pro.processRankList = function(info){
     var self = this;
-    if(!self.data || info.rankmode == undefined){
+    if(!self.data || self.rankmode == undefined){
         return;
     }
 
@@ -82,6 +82,7 @@ pro.processRankList = function(info){
     var newitem = {
         uid: info.uid,
         score: info.score,
+        name : info.name || "",
         lasttime:new Date()
     };
 

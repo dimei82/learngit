@@ -7,13 +7,22 @@ var rankMode = playerConst.rankMode;
 
 var APP = null;
 var SID = null;
+var DETAIL = "";
 var ranklistContainer = {};
 var updateInterval = 1000 * 60 * 60;
 
-var pro = module.export;
+var pro = module.exports;
+
 pro.init = function(app) {
     APP = app;
-    SID = app.getCurServer();
+    SID = app.getServerId();
+
+    if (SID) {
+        var params = SID.split("-");
+        if (params.length > 0) {
+            DETAIL =  params.pop();
+        }
+    }
 };
 
 pro.getRanklistByMode = function(mode, sub, cb) {
@@ -36,7 +45,7 @@ var getRanklist = function(mode, submode, cb) {
         return null;
     }
 
-    var rank_mode = SID + "_" + 0 + "_" + mode + "_" + submode;
+    var rank_mode = rank + "_" + DETAIL +  0 + "_" + mode + "_" + submode;
     var pr = ranklistContainer[rank_mode];
 
     if (!pr) {
