@@ -93,7 +93,7 @@ pro.processRankList = function(info){
         }
         self.data.ranklist[idx].score = newitem.score;
         self.data.ranklist[idx].lasttime = newitem.lasttime;
-        newitem._id = self.data.ranklist[idx]._id;
+        newitem._id = self.data.ranklist[idx]._id.toString();
         self.raddrank(newitem);
     }
     else
@@ -103,7 +103,7 @@ pro.processRankList = function(info){
         }
         var len = self.data.ranklist.length;
         if(len < MaxRankCount){
-            newitem._id = mongoose.generateId();
+            newitem._id = mongoose.generateId().toString();
             self.data.ranklist.push(newitem);
             self.raddrank(newitem, true);
         }else{
@@ -168,7 +168,7 @@ pro.destroy = function(){
 
 pro.rsort = function() {
     var self = this;
-    if (!self.data || self.change) {
+    if (!self.data) {
         return;
     }
 
@@ -179,16 +179,17 @@ pro.rsort = function() {
     for (var i = 0; i < ranklistData.length; ++i) {
         var rank = ranklistData[i];
         var score = rank.score;
-        var _id = rank._id;
+        var _id = rank._id.toString();
         rankdata.push(score);
         rankdata.push(_id);
 
         var rankInfo = JSON.stringify({uid : rank.uid, score : rank.score, name : rank.name, detailed : rank.detailed || {}});
         rankinfolist.push(_id);
         rankinfolist.push(rankInfo);
+        redis.rank.hset(self.rankinfo, _id, rankInfo);
     }
     redis.rank.zadd(self.rankmode, rankdata);
-    redis.rank.hset(self.rankinfo, rankinfolist);
+//    redis.rank.hset(self.rankinfo, rankinfolist);
 };
 
 pro.raddrank = function(item, updateinfo) {
